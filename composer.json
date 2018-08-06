@@ -1,0 +1,12 @@
+{
+  "name": "andrey/csv-converter",
+  "authors": [
+    {
+      "name": "Dysha96",
+      "email": "Dyha96@inbox.ru"
+    }
+  ],
+  "require": {
+    "ulrichsg/getopt-php": "^3.0"
+  }
+}
