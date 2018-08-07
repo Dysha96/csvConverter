@@ -1,5 +1,6 @@
 {
   "name": "andrey/csv-converter",
+  "description": "my project",
   "authors": [
     {
       "name": "Dysha96",
@@ -7,6 +8,7 @@
     }
   ],
   "require": {
-    "ulrichsg/getopt-php": "^3.0"
+    "ulrichsg/getopt-php": "^3.0",
+    "fzaninotto/faker": "^1.8"
   }
 }
