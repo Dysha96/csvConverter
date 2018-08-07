@@ -47,13 +47,16 @@ class parametersParser
                 ->setArgument(new Argument(',', 'is_string', 'delimiter')),
 
             Option::create(null, 'skip-first', GetOpt::NO_ARGUMENT)
-                ->setDescription('Skip the first line'),
+                ->setDescription('Skip the first line')
+                ->setDefaultValue(false),
 
             Option::create(null, 'strict', GetOpt::NO_ARGUMENT)
-                ->setDescription('Verify that the file contains the required number of columns'),
+                ->setDescription('Verify that the file contains the required number of columns')
+                ->setDefaultValue(false),
 
             Option::create('h', 'help', GetOpt::NO_ARGUMENT)
-                ->setDescription('Print help'),
+                ->setDescription('Print help')
+                ->setDefaultValue(false),
 
         ]);
     }
