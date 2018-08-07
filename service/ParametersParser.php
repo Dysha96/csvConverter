@@ -19,27 +19,56 @@ class parametersParser
 
     public function __construct()
     {
-        $this->getOpt = new GetOpt([
+        $this->getOpt = new GetOpt();
+    }
+
+    private function initializationOption()
+    {
+        $this->getOpt->addOptions([
 
             Option::create('i', 'input', GetOpt::REQUIRED_ARGUMENT)
                 ->setDescription('This you input file')
                 ->setValidation(function ($arg) {
                     $info = new SplFileInfo($arg);
-                    return $info->getExtension() == 'csv' && $info->isReadable();
+                    if ($info->getExtension() != 'csv') {
+                        echo "FILE HAS AN INCORRECT FORMAT" . PHP_EOL;
+                        return false;
+                    }
+                    if (!$info->isReadable()) {
+                        echo "MISSING FILE OR NOT ENOUGH RIGHTS" . PHP_EOL;
+                        return false;
+                    }
+                    return true;
                 }),
 
             Option::create('c', 'config', GetOpt::REQUIRED_ARGUMENT)
                 ->setDescription('This you config file')
                 ->setValidation(function ($arg) {
                     $info = new SplFileInfo($arg);
-                    return $info->getExtension() == 'php' && $info->isReadable();
+                    if ($info->getExtension() != 'php') {
+                        echo "FILE NOT CORRECTED" . PHP_EOL;
+                        return false;
+                    }
+                    if (!$info->isReadable()) {
+                        echo "MISSING FILE OR NOT ENOUGH RIGHTS" . PHP_EOL;
+                        return false;
+                    }
+                    return true;
                 }),
 
             Option::create('o', 'output', GetOpt::REQUIRED_ARGUMENT)
                 ->setDescription('This you output file')
                 ->setValidation(function ($arg) {
                     $info = new SplFileInfo($arg);
-                    return $info->getExtension() == 'csv' && ($info->isWritable() || !$info->isFile());
+                    if ($info->getExtension() != 'csv') {
+                        echo "FILE NOT CORRECTED" . PHP_EOL;
+                        return false;
+                    }
+                    if (!$info->isWritable() && $info->isFile()) {
+                        echo "NOT ENOUGH RIGHTS" . PHP_EOL;
+                        return false;
+                    }
+                    return true;
                 }),
 
             Option::create('d', 'delimiter', GetOpt::OPTIONAL_ARGUMENT)
@@ -82,6 +111,7 @@ class parametersParser
     public function getParameters()
     {
         if (!$this->isParsed) {
+            $this->initializationOption();
             $this->parse();
         }
         return new Parameters(
@@ -98,6 +128,7 @@ class parametersParser
     public function help()
     {
         if (!$this->isParsed) {
+            $this->initializationOption();
             $this->parse();
         }
         return $this->getOpt->getHelpText();
