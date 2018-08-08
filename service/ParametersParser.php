@@ -1,7 +1,8 @@
 <?php
 
 namespace service;
-require_once "domains/Parameters.php";
+require_once dirname(__DIR__) . '/domains/Parameters.php';
+//require_once "../domains/Parameters.php";
 
 use domains\Parameters;
 use GetOpt\Argument;
@@ -104,7 +105,7 @@ class parametersParser
         } catch (ArgumentException $exception) {
             file_put_contents('php://stderr', $exception->getMessage() . PHP_EOL);
             echo PHP_EOL . $this->getOpt->getHelpText();
-            exit;
+            exit(1);
         }
     }
 

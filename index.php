@@ -11,13 +11,13 @@ $parameters = $parametersParser->getParameters();
 // show help and quit
 if ($parameters->isHelp()) {
     echo $parametersParser->help();
-    exit;
+    exit(1);
 }
 // show help and quit
 if (!$parameters->getInputPath() || !$parameters->getConfigPath() || !$parameters->getOutputPath()) {
     echo "Insufficient data " . PHP_EOL;
     echo $parametersParser->help();
-    exit;
+    exit(1);
 }
 
 $encoding = mb_detect_encoding(file_get_contents($parameters->getInputPath()));
@@ -25,7 +25,7 @@ $encoding = mb_detect_encoding(file_get_contents($parameters->getInputPath()));
 if ($encoding != 'UTF-8' && $encoding != 'cp1251') {
     echo "Incorrect encoding " . PHP_EOL;
     echo $parametersParser->help();
-    exit;
+    exit(1);
 }
 
 $inCsv = new SplFileObject($parameters->getInputPath());
@@ -40,7 +40,7 @@ if ($parameters->isStrict() && $inCsv->valid()) {
 
     if ($latestIndexArrayConfig > $latestIndexRowData) {
         echo "The number of columns of the input file is less than in the config" . PHP_EOL;
-        exit;
+        exit(1);
     }
     $inCsv->rewind();
 }
