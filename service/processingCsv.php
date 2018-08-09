@@ -1,6 +1,6 @@
 <?php
 
-$process = function ($rowData, $arrayConfig, $faker, $rowIndex) {
+function process ($rowData, $arrayConfig, $faker, $rowIndex) {
     return array_map(function ($key, $value) use ($arrayConfig, $faker, $rowData, $rowIndex) {
         if (!array_key_exists($key, $arrayConfig)) {
             return $value;
@@ -17,11 +17,11 @@ $process = function ($rowData, $arrayConfig, $faker, $rowIndex) {
     }, array_keys($rowData), $rowData);
 };
 
-$record = function ($file, $rowData, $delimiter, $enclosure, $escape) {
+function record ($file, $rowData, $delimiter, $enclosure, $escape) {
     $file->fputcsv($rowData, $delimiter, $enclosure, $escape);
 };
 
-$transcoding = function ($rowData) {
+function transcoding ($rowData) {
     return array_map(function ($value) {
         $inCode = mb_detect_encoding($value, array('UTF-8', 'Windows-1251'));
         if ($inCode != iconv_get_encoding('output_encoding')) {

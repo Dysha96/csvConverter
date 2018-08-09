@@ -35,7 +35,6 @@ $encoding = mb_detect_encoding(file_get_contents($parameters->getInputPath()), a
 // show help and quit
 if ($encoding != 'UTF-8' && $encoding != 'Windows-1251') {
     echo "Incorrect encoding " . PHP_EOL;
-    echo $parametersParser->help();
     exit(1);
 }
 
@@ -75,10 +74,10 @@ while ($inCsv->valid()) {
             echo "Error while reading the file" . PHP_EOL;
             exit(1);
         }
-        $processedRowData = $process($rowData, $arrayConfig, $faker, $inCsv->key());
+        $processedRowData = process($rowData, $arrayConfig, $faker, $inCsv->key());
     }
-    $encodingRowData = $transcoding($processedRowData);
-    $record($outCsv, $encodingRowData, $delimiter, $enclosure, $escape);
+    $encodingRowData = transcoding($processedRowData);
+    record($outCsv, $encodingRowData, $delimiter, $enclosure, $escape);
 }
 
 $fp = fopen($parameters->getOutputPath(), "r");
