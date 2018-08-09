@@ -20,3 +20,13 @@ $process = function ($rowData, $arrayConfig, $faker) {
 $record = function ($file, $rowData, $delimiter, $enclosure, $escape) {
     $file->fputcsv($rowData, $delimiter, $enclosure, $escape);
 };
+
+$transcoding = function ($rowData) {
+    return array_map(function ($value) {
+        $inCode = mb_detect_encoding($value, array('UTF-8', 'Windows-1251'));
+        if ($inCode != iconv_get_encoding('output_encoding')) {
+            $value = mb_convert_encoding($value, iconv_get_encoding('output_encoding'), $inCode);
+        }
+        return $value;
+    }, $rowData);
+};
