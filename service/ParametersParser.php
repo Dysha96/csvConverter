@@ -2,6 +2,7 @@
 
 namespace service;
 require_once dirname(__DIR__) . '/domains/Parameters.php';
+
 //require_once "../domains/Parameters.php";
 
 use domains\Parameters;
@@ -114,6 +115,7 @@ class parametersParser
         if (!$this->isParsed) {
             $this->initializationOption();
             $this->parse();
+            $this->isParsed = true;
         }
         return new Parameters(
             $this->getOpt->getOption('input'),
@@ -131,6 +133,7 @@ class parametersParser
         if (!$this->isParsed) {
             $this->initializationOption();
             $this->parse();
+            $this->isParsed = true;
         }
         return $this->getOpt->getHelpText();
     }
