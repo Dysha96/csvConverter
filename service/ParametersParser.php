@@ -1,7 +1,9 @@
 <?php
 
 namespace service;
-require_once "domains/Parameters.php";
+require_once dirname(__DIR__) . '/domains/Parameters.php';
+
+//require_once "../domains/Parameters.php";
 
 use domains\Parameters;
 use GetOpt\Argument;
@@ -19,27 +21,56 @@ class parametersParser
 
     public function __construct()
     {
-        $this->getOpt = new GetOpt([
+        $this->getOpt = new GetOpt();
+    }
+
+    private function initializationOption()
+    {
+        $this->getOpt->addOptions([
 
             Option::create('i', 'input', GetOpt::REQUIRED_ARGUMENT)
                 ->setDescription('This you input file')
                 ->setValidation(function ($arg) {
                     $info = new SplFileInfo($arg);
-                    return $info->getExtension() == 'csv' && $info->isReadable();
+                    if ($info->getExtension() != 'csv') {
+                        echo "FILE HAS AN INCORRECT FORMAT" . PHP_EOL;
+                        return false;
+                    }
+                    if (!$info->isReadable()) {
+                        echo "MISSING FILE OR NOT ENOUGH RIGHTS" . PHP_EOL;
+                        return false;
+                    }
+                    return true;
                 }),
 
             Option::create('c', 'config', GetOpt::REQUIRED_ARGUMENT)
                 ->setDescription('This you config file')
                 ->setValidation(function ($arg) {
                     $info = new SplFileInfo($arg);
-                    return $info->getExtension() == 'php' && $info->isReadable();
+                    if ($info->getExtension() != 'php') {
+                        echo "FILE NOT CORRECTED" . PHP_EOL;
+                        return false;
+                    }
+                    if (!$info->isReadable()) {
+                        echo "MISSING FILE OR NOT ENOUGH RIGHTS" . PHP_EOL;
+                        return false;
+                    }
+                    return true;
                 }),
 
             Option::create('o', 'output', GetOpt::REQUIRED_ARGUMENT)
                 ->setDescription('This you output file')
                 ->setValidation(function ($arg) {
                     $info = new SplFileInfo($arg);
-                    return $info->getExtension() == 'csv' && ($info->isWritable() || !$info->isFile());
+                    if ($info->getExtension() != 'csv') {
+                        echo "FILE NOT CORRECTED" . PHP_EOL;
+                        return false;
+                    }
+                    if (!$info->isWritable() && $info->isFile()) {
+                        echo "NOT ENOUGH RIGHTS" . PHP_EOL;
+                        return false;
+                    }
+                    return true;
                 }),
 
             Option::create('d', 'delimiter', GetOpt::OPTIONAL_ARGUMENT)
@@ -47,13 +78,16 @@ class parametersParser
                 ->setArgument(new Argument(',', 'is_string', 'delimiter')),
 
             Option::create(null, 'skip-first', GetOpt::NO_ARGUMENT)
-                ->setDescription('Skip the first line'),
+                ->setDescription('Skip the first line')
+                ->setDefaultValue(false),
 
             Option::create(null, 'strict', GetOpt::NO_ARGUMENT)
-                ->setDescription('Verify that the file contains the required number of columns'),
+                ->setDescription('Verify that the file contains the required number of columns')
+                ->setDefaultValue(false),
 
             Option::create('h', 'help', GetOpt::NO_ARGUMENT)
-                ->setDescription('Print help'),
+                ->setDescription('Print help')
+                ->setDefaultValue(false),
 
         ]);
     }
@@ -72,14 +106,16 @@ class parametersParser
         } catch (ArgumentException $exception) {
             file_put_contents('php://stderr', $exception->getMessage() . PHP_EOL);
             echo PHP_EOL . $this->getOpt->getHelpText();
-            exit;
+            exit(1);
         }
     }
 
     public function getParameters()
     {
         if (!$this->isParsed) {
+            $this->initializationOption();
             $this->parse();
+            $this->isParsed = true;
         }
         return new Parameters(
             $this->getOpt->getOption('input'),
@@ -95,7 +131,9 @@ class parametersParser
     public function help()
     {
         if (!$this->isParsed) {
+            $this->initializationOption();
             $this->parse();
+            $this->isParsed = true;
         }
         return $this->getOpt->getHelpText();
     }
