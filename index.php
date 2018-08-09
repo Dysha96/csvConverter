@@ -1,9 +1,14 @@
 <?php
+
+namespace App;
+
 require_once "vendor/autoload.php";
 require_once "service/ParametersParser.php";
 require_once "service/processingCsv.php";
 
+use Faker\Factory;
 use service\parametersParser;
+use SplFileObject;
 
 $parametersParser = new parametersParser();
 $parameters = $parametersParser->getParameters();
@@ -11,7 +16,7 @@ $parameters = $parametersParser->getParameters();
 // show help and quit
 if ($parameters->isHelp()) {
     echo $parametersParser->help();
-    exit(1);
+    exit;
 }
 // show help and quit
 if (!$parameters->getInputPath() || !$parameters->getConfigPath() || !$parameters->getOutputPath()) {
@@ -20,9 +25,15 @@ if (!$parameters->getInputPath() || !$parameters->getConfigPath() || !$parameter
     exit(1);
 }
 
-$encoding = mb_detect_encoding(file_get_contents($parameters->getInputPath()));
+if ($parameters->getInputPath() == $parameters->getOutputPath()) {
+    echo "Files match" . PHP_EOL;
+    echo $parametersParser->help();
+    exit(1);
+}
+
+$encoding = mb_detect_encoding(file_get_contents($parameters->getInputPath()), array('UTF-8', 'Windows-1251'));
 // show help and quit
-if ($encoding != 'UTF-8' && $encoding != 'cp1251') {
+if ($encoding != 'UTF-8' && $encoding != 'Windows-1251') {
     echo "Incorrect encoding " . PHP_EOL;
     echo $parametersParser->help();
     exit(1);
@@ -31,7 +42,11 @@ if ($encoding != 'UTF-8' && $encoding != 'cp1251') {
 $inCsv = new SplFileObject($parameters->getInputPath());
 $inCsv->setFlags(SplFileObject::READ_CSV);
 $delimiter = $parameters->getDelimiter();
-$arrayConfig = require_once $parameters->getConfigPath();
+if (strlen($delimiter) != 1){
+    echo "Wrong delimiter" . PHP_EOL;
+    exit(1);
+}
+    $arrayConfig = require_once $parameters->getConfigPath();
 
 if ($parameters->isStrict() && $inCsv->valid()) {
     $firstRowData = $inCsv->fgetcsv($delimiter);
@@ -48,7 +63,7 @@ if ($parameters->isStrict() && $inCsv->valid()) {
 $paramsInFile = $inCsv->getCsvControl();
 $enclosure = $paramsInFile[1];
 $escape = $paramsInFile[2];
-$faker = Faker\Factory::create();
+$faker = Factory::create();
 $outCsv = new SplFileObject($parameters->getOutputPath(), 'w');
 iconv_set_encoding('output_encoding', $encoding);
 
@@ -56,7 +71,16 @@ while ($inCsv->valid()) {
     if ($inCsv->key() == 0 && $parameters->isSkipFirst()) {
         $processedRowData = $inCsv->fgetcsv($delimiter);
     } else {
-        $processedRowData = $process($inCsv->fgetcsv($delimiter), $arrayConfig, $faker);
+        if (!$rowData = $inCsv->fgetcsv($delimiter)) {
+            echo "Error while reading the file" . PHP_EOL;
+            exit(1);
+        }
+        $processedRowData = $process($rowData, $arrayConfig, $faker);
     }
-    $record($outCsv, $processedRowData, $delimiter, $enclosure, $escape);
+    $encodingRowData = $transcoding($processedRowData);
+    $record($outCsv, $encodingRowData, $delimiter, $enclosure, $escape);
 }
+
+$fp = fopen($parameters->getOutputPath(), "r");
+$stat = fstat($fp);
+$outCsv->ftruncate($stat['size'] - 1);
