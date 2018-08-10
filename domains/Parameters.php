@@ -13,17 +13,6 @@ class Parameters
     private $strict;
     private $help;
 
-    /**
-     * Parameters constructor.
-     * @param $inputPath
-     * @param $configPath
-     * @param $outputPath
-     * @param $delimiter
-     * @param $skipFirst
-     * @param $strict
-     * @param $help
-     */
-
     public function __construct($inputPath, $configPath, $outputPath, $delimiter, $skipFirst, $strict, $help)
     {
         $this->inputPath = $inputPath;
@@ -35,61 +24,39 @@ class Parameters
         $this->help = $help;
     }
 
-    /**
-     * @return mixed
-     */
     public function getInputPath()
     {
         return $this->inputPath;
     }
 
-    /**
-     * @return mixed
-     */
     public function getConfigPath()
     {
         return $this->configPath;
     }
 
-    /**
-     * @return mixed
-     */
     public function getOutputPath()
     {
         return $this->outputPath;
     }
 
-    /**
-     * @return mixed
-     */
     public function getDelimiter()
     {
         return $this->delimiter;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getSkipFirst()
+    public function isSkipFirst()
     {
         return $this->skipFirst;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getStrict()
+    public function isStrict()
     {
         return $this->strict;
     }
 
-    /**
-     * @return mixed
-     */
     public function isHelp()
     {
-        return ($this->help) ? true : false;
+        return $this->help;
     }
-
 
 }
