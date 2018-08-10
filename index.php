@@ -65,13 +65,20 @@ $escape = $paramsInFile[2];
 $faker = Factory::create();
 $outCsv = new SplFileObject($parameters->getOutputPath(), 'w');
 iconv_set_encoding('output_encoding', $encoding);
+$numberColumns = 0;
 
 while ($inCsv->valid()) {
-    if ($inCsv->key() == 0 && $parameters->isSkipFirst()) {
-        $processedRowData = $inCsv->fgetcsv($delimiter);
+    $rowData = $inCsv->fgetcsv($delimiter);
+    if ($inCsv->key() == 0) {
+        if ($parameters->isSkipFirst()) {
+            $processedRowData = $rowData;
+        } else {
+            $processedRowData = process($rowData, $arrayConfig, $faker, $inCsv->key());
+        }
+        $numberColumns = sizeof($rowData);
     } else {
-        if (!$rowData = $inCsv->fgetcsv($delimiter)) {
-            echo "Error while reading the file" . PHP_EOL;
+        if (sizeof($rowData) != $numberColumns) {
+            echo "File does not meet the standard, processing is interrupted" . PHP_EOL;
             exit(1);
         }
         $processedRowData = process($rowData, $arrayConfig, $faker, $inCsv->key());
