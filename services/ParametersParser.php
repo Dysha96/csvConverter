@@ -1,9 +1,6 @@
 <?php
 
-namespace service;
-require_once dirname(__DIR__) . '/domains/Parameters.php';
-
-//require_once "../domains/Parameters.php";
+namespace services;
 
 use domains\Parameters;
 use GetOpt\Argument;
@@ -13,7 +10,7 @@ use GetOpt\GetOpt;
 use GetOpt\Option;
 use SplFileInfo;
 
-class parametersParser
+class ParametersParser
 {
     private $getOpt;
 

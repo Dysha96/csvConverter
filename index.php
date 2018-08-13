@@ -1,16 +1,14 @@
 <?php
 
-namespace App;
-
 require_once "vendor/autoload.php";
-require_once "service/ParametersParser.php";
-require_once "service/processingCsv.php";
 
 use Faker\Factory;
-use service\parametersParser;
-use SplFileObject;
+use services\ParametersParser;
+use function services\process;
+use function services\record;
+use function services\transcoding;
 
-$parametersParser = new parametersParser();
+$parametersParser = new ParametersParser();
 $parameters = $parametersParser->getParameters();
 
 // show help and quit

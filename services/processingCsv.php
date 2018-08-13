@@ -1,6 +1,11 @@
 <?php
 
-function process ($rowData, $arrayConfig, $faker, $rowIndex) {
+namespace services;
+
+use Exception;
+
+function process($rowData, $arrayConfig, $faker, $rowIndex)
+{
     return array_map(function ($key, $value) use ($arrayConfig, $faker, $rowData, $rowIndex) {
         if (!array_key_exists($key, $arrayConfig)) {
             return $value;
@@ -15,13 +20,16 @@ function process ($rowData, $arrayConfig, $faker, $rowIndex) {
             return $fakerType;
         }
     }, array_keys($rowData), $rowData);
-};
+}
 
-function record ($file, $rowData, $delimiter, $enclosure, $escape) {
+function record($file, $rowData, $delimiter, $enclosure, $escape)
+{
     $file->fputcsv($rowData, $delimiter, $enclosure, $escape);
-};
+}
 
-function transcoding ($rowData) {
+
+function transcoding($rowData)
+{
     return array_map(function ($value) {
         $inCode = mb_detect_encoding($value, array('UTF-8', 'Windows-1251'));
         if ($inCode != iconv_get_encoding('output_encoding')) {
@@ -29,4 +37,4 @@ function transcoding ($rowData) {
         }
         return $value;
     }, $rowData);
-};
+}
