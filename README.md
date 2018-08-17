@@ -66,4 +66,4 @@ return [
 ### Для запуска unit тестов необходимо
 
 +  cd ./tests/
-+  Выполнить команду phpunit .
++  Выполнить команду ../vendor/phpunit/phpunit/phpunit .
